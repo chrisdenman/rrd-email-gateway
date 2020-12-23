@@ -21,12 +21,31 @@ data class EmailTo(val address: InternetAddress)
 data class EmailUserName(val text: String)
 data class SubjectTemplate(val text: String)
 
+/**
+ * The errors that `EMailOutputGateway.notify(...)` may return, contained in a `Left(.)`
+ */
 sealed class EMailOutputGatewayException : Throwable() {
     object NotifyException : EMailOutputGatewayException()
 }
 
 typealias NotifyError = EMailOutputGatewayException.NotifyException
 
+/**
+ * Construct a new email output gateway.
+ *
+ * Mails are sent using SMTP, using a hardcoded provider.
+ *
+ * The `subjectTemplate` permits the replacement of a single token of the value `<<serviceType>>'; it is
+ * replaced with: `'Refuse'` when the service type is `ServiceType.REFUSE` and, `'Recycling'`, when the service is of type
+ * `ServiceType.RECYCLING`.
+ *
+ * @param emailUserName the SMTP user's name
+ * @param emailPassword the SMTP user's password
+ * @param emailFrom the email's source mailbox name
+ * @param emailTo the email's destination mailbox name
+ * @param emailBodyText the email's body text
+ * @param subjectTemplate the email's subject template.
+ */
 fun createEMailOutputGateway(
     emailUserName: EmailUserName,
     emailPassword: EmailPassword,
@@ -100,15 +119,19 @@ private class EMailOutputGateway(
 
         private fun smtpProp(s: Any) = "$SMTP_PREFIX$s"
 
-        private fun buildSessionProperties() = listOf(
-            Pair("debug", true),
-            Pair(smtpProp("auth"), true),
-            Pair(smtpProp("starttls.required"), true),
-            Pair(smtpProp("host"), "smtp.mail.me.com"),
-            Pair(smtpProp("port"), 587)
-        ).fold(Properties()) { props, (first, second) ->
-            props[mailProp(first)] = second
-            props
-        }
+        private val sessionProperties: Map<String, Any> = mapOf(
+            "debug" to true,
+            smtpProp("auth") to true,
+            smtpProp("starttls.required") to true,
+            smtpProp("host") to "smtp.mail.me.com",
+            smtpProp("port") to 587,
+        )
+
+        private fun buildSessionProperties() = sessionProperties
+            .entries
+            .fold(Properties()) { props, (k, v) ->
+                props[mailProp(k)] = v
+                props
+            }
     }
 }
