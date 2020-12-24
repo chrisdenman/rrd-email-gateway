@@ -14,11 +14,34 @@ import javax.mail.Transport
 import javax.mail.internet.InternetAddress
 import javax.mail.internet.MimeMessage
 
+/**
+ * @param text the email's body text
+ */
 data class EmailBodyText(val text: String)
+
+/**
+ * @param address the email's source mailbox name
+ */
 data class EmailFrom(val address: InternetAddress)
+
+/**
+ * @param text the SMTP user's password
+ */
 data class EmailPassword(val text: String)
+
+/**
+ * @param address the email's destination mailbox name
+ */
 data class EmailTo(val address: InternetAddress)
+
+/**
+ * @param text the SMTP user's name
+ */
 data class EmailUserName(val text: String)
+
+/**
+ * @param text the email's subject template
+ */
 data class SubjectTemplate(val text: String)
 
 /**
@@ -35,8 +58,8 @@ typealias NotifyError = EMailOutputGatewayException.NotifyException
  *
  * Mails are sent using SMTP, using a hardcoded provider.
  *
- * The `subjectTemplate` permits the replacement of a single token of the value `<<serviceType>>'; it is
- * replaced with: `'Refuse'` when the service type is `ServiceType.REFUSE` and, `'Recycling'`, when the service is of type
+ * The `subjectTemplate` permits the replacement of a single token of the value '<<serviceType>>'; it is
+ * replaced with: 'Refuse' when the service type is `ServiceType.REFUSE`  and, 'Recycling',  when the service is of type
  * `ServiceType.RECYCLING`.
  *
  * @param emailUserName the SMTP user's name
@@ -44,7 +67,9 @@ typealias NotifyError = EMailOutputGatewayException.NotifyException
  * @param emailFrom the email's source mailbox name
  * @param emailTo the email's destination mailbox name
  * @param emailBodyText the email's body text
- * @param subjectTemplate the email's subject template.
+ * @param subjectTemplate the email's subject template
+ *
+ * @constructor
  */
 fun createEMailOutputGateway(
     emailUserName: EmailUserName,
